@@ -14,6 +14,7 @@ ASCharacter::ASCharacter()
 
 	// Set Character to be able to crouch.
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	GetMovementComponent()->GetNavAgentPropertiesRef().bCanJump = true;
 	
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm Component"));
 	SpringArmComp->bUsePawnControlRotation = true;
@@ -52,6 +53,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ASCharacter::BeginCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::EndCrouch);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::BeginJump);
+
 }
 
 
@@ -69,6 +73,7 @@ void ASCharacter::MoveRight(float Value)
 void ASCharacter::BeginCrouch()
 {
 	Crouch();
+	
 
 	UE_LOG(LogTemp, Warning, TEXT("Being Crouch !"));
 }
@@ -78,4 +83,9 @@ void ASCharacter::EndCrouch()
 	UnCrouch();
 
 	UE_LOG(LogTemp, Warning, TEXT("End Crouch !"));
+}
+
+void ASCharacter::BeginJump()
+{
+	Jump();
 }

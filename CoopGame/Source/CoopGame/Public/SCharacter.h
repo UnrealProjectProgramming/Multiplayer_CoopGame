@@ -32,6 +32,9 @@ protected:
 
 	void EndCrouch();
 
+	void BeginJump();
+
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
