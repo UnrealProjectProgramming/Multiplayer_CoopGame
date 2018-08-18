@@ -59,6 +59,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 }
 
 
+
 void ASCharacter::MoveForward(float Value)
 {
 	AddMovementInput(GetActorForwardVector() * Value);
@@ -88,4 +89,17 @@ void ASCharacter::EndCrouch()
 void ASCharacter::BeginJump()
 {
 	Jump();
+}
+
+
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	// We are not calling super because we don't want any base implementation, we need to completely override it ! 
+
+	if (CameraComp)
+	{
+		return CameraComp->GetComponentLocation();
+	}
+
+	return Super::GetPawnViewLocation();
 }
