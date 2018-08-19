@@ -35,6 +35,7 @@ void ASWeapon::Fire()
 
 		FVector HitDirection = EyeRotation.Vector();
 		FVector MaxLineTrace = EyeLocation + (HitDirection * 10000);
+
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(MyOwner);
 		QueryParams.AddIgnoredActor(this);
