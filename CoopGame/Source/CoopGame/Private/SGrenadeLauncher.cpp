@@ -3,7 +3,6 @@
 #include "SGrenadeLauncher.h"
 
 
-
 void ASGrenadeLauncher::Fire()
 {
 	AActor* MyOwner = GetOwner();

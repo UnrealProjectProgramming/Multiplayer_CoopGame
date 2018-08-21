@@ -18,9 +18,6 @@ class COOPGAME_API ASGrenadeLauncher : public ASWeapon
 	
 public:
 
-	
-protected:
-
 	virtual void Fire() override;
 
 protected:
