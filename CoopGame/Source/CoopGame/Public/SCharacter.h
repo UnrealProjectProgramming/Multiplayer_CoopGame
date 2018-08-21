@@ -34,6 +34,9 @@ protected:
 
 	void BeginJump();
 
+	void BeginZoom();
+
+	void EndZoom();
 
 protected:
 
@@ -42,6 +45,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
+
+	bool bWantsToZoom;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float ZoomedFOV;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.0f, ClampMax = 100.0f))
+	float ZoomInterpSpeed = 50.0f;
+
+
+	/* Default FOV which is set during the gameplay ! */
+	float DefaultFOV;
 
 public:	
 	// Called every frame

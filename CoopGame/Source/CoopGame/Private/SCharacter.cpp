@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 
+
 // Sets default values
 ASCharacter::ASCharacter()
 {
@@ -22,13 +23,17 @@ ASCharacter::ASCharacter()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	ZoomedFOV = 55.0f;
 }
+
 
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	DefaultFOV = CameraComp->FieldOfView;
 }
 
 
@@ -37,6 +42,11 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
+
+	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
+
+	CameraComp->SetFieldOfView(NewFOV);
 }
 
 
@@ -56,8 +66,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::BeginJump);
 
-}
+	PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &ASCharacter::BeginZoom);
+	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ASCharacter::EndZoom);
 
+}
 
 
 void ASCharacter::MoveForward(float Value)
@@ -71,24 +83,34 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(GetActorRightVector() * Value);
 }
 
+
 void ASCharacter::BeginCrouch()
 {
 	Crouch();
-	
-
-	UE_LOG(LogTemp, Warning, TEXT("Being Crouch !"));
 }
+
 
 void ASCharacter::EndCrouch()
 {
 	UnCrouch();
-
-	UE_LOG(LogTemp, Warning, TEXT("End Crouch !"));
 }
+
 
 void ASCharacter::BeginJump()
 {
 	Jump();
+}
+
+
+void ASCharacter::BeginZoom()
+{
+	bWantsToZoom = true;
+}
+
+
+void ASCharacter::EndZoom()
+{
+	bWantsToZoom = false;
 }
 
 
