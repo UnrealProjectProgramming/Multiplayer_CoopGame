@@ -10,9 +10,8 @@ USHealthComponent::USHealthComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	DefaultHealth = 100;
 	Health = 100;
-
-
 }
 
 
@@ -20,8 +19,24 @@ USHealthComponent::USHealthComponent()
 void USHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
 	
+	AActor* MyOwner = GetOwner();
+	if (MyOwner)
+	{
+		MyOwner->OnTakeAnyDamage.AddDynamic(this, &USHealthComponent::HandleTakeAnyDamage);
+	}
+	DefaultHealth = Health;
+}
+
+void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (Damage <= 0.0f)
+	{
+		return;
+	}
+
+	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
+
+	UE_LOG(LogTemp, Warning, TEXT("Health Changed:  %s"), *FString::SanitizeFloat(Health));
 }
 
