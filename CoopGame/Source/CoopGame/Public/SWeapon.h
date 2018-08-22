@@ -24,6 +24,8 @@ protected:
 
 	void PlayFireEffects(FVector TracerEndPoint);
 
+	virtual void BeginPlay() override;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -58,10 +60,21 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShake> CameraShakeClass;
+
+	/*The weapon rate of fire, The higher the value is the faster the weapon will shot the Ray (Bullet) */
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 1.0f, ClampMax = 2000.0f))
+	float RateOfFire;
+
+	float TimeBetweenShots;
+
+	float LastFireTime;
+	
+	FTimerHandle TimeHandle_TimeBetweenShots;
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Fire();
 
+	void StartFire();
 
+	void StopFire();
 };

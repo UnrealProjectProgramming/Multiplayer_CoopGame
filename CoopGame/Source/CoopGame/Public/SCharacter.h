@@ -39,7 +39,9 @@ protected:
 
 	void EndZoom();
 	
-	void BeginFire();
+	void StartFire();
+
+	void StopFire();
 
 protected:
 
