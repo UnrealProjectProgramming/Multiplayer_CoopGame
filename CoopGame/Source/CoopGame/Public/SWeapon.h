@@ -72,7 +72,11 @@ protected:
 	FTimerHandle TimeHandle_TimeBetweenShots;
 public:
 
+	
 	virtual void Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire();
 
 	void StartFire();
 
