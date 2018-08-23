@@ -11,6 +11,20 @@ class UDamageType;
 class UParticleSystem;
 class UCameraShake;
 
+
+USTRUCT()
+struct FHitScanTrace
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	FVector_NetQuantize TraceFrom;
+
+	UPROPERTY()
+	FVector_NetQuantize TraceTo;
+};
+
 UCLASS()
 class COOPGAME_API ASWeapon : public AActor
 {
@@ -25,6 +39,10 @@ protected:
 	void PlayFireEffects(FVector TracerEndPoint);
 
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnRep_HitScanTrace();
+
 
 protected:
 
@@ -70,6 +88,9 @@ protected:
 	float LastFireTime;
 	
 	FTimerHandle TimeHandle_TimeBetweenShots;
+
+	UPROPERTY(ReplicatedUsing = OnRep_HitScanTrace)
+	FHitScanTrace HitScanTrace;
 public:
 
 	
