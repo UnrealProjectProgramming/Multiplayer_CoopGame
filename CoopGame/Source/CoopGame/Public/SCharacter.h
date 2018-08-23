@@ -80,6 +80,7 @@ protected:
 
 	ASWeapon* CurrentWeapon;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USHealthComponent* HealthComp;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
