@@ -11,6 +11,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class ASWeapon;
+class USHealthComponent;
 
 UCLASS()
 class COOPGAME_API ASCharacter : public ACharacter
@@ -24,6 +25,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void SetupWeapon();
 
 	void MoveForward(float Value);
 
@@ -42,6 +45,9 @@ protected:
 	void StartFire();
 
 	void StopFire();
+
+	UFUNCTION()
+	void OnHealthChanged(USHealthComponent* HealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 protected:
 
@@ -73,6 +79,11 @@ protected:
 	float DefaultFOV;
 
 	ASWeapon* CurrentWeapon;
+
+	USHealthComponent* HealthComp;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	bool bDied;
 
 public:	
 	// Called every frame

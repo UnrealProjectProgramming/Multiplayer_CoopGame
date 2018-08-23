@@ -3,12 +3,14 @@
 #include "SCharacter.h"
 
 #include "CoopGame.h"
+#include "SWeapon.h"
+#include "SHealthComponent.h"
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "SWeapon.h"
+
 
 
 // Sets default values
@@ -30,6 +32,8 @@ ASCharacter::ASCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->SetupAttachment(SpringArmComp);
 
+	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("Health Component"));
+
 	ZoomedFOV = 55.0f;
 	WeaponAttachSocketName = "WeaponSocket";
 }
@@ -39,12 +43,18 @@ ASCharacter::ASCharacter()
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	DefaultFOV = CameraComp->FieldOfView;
 	
+	SetupWeapon();
+
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
+
+void ASCharacter::SetupWeapon()
+{
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
 	CurrentWeapon = GetWorld()->SpawnActor<ASWeapon>(StarterWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 
 	if (CurrentWeapon)
@@ -52,9 +62,7 @@ void ASCharacter::BeginPlay()
 		CurrentWeapon->SetOwner(this);
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
 	}
-
 }
-
 
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
@@ -152,6 +160,29 @@ void ASCharacter::StopFire()
 		CurrentWeapon->StopFire();
 	}
 
+}
+
+
+void ASCharacter::OnHealthChanged(USHealthComponent* HealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (Health <= 0.0f && !bDied)
+	{
+		// Die
+		bDied = true;  // Playing death animation 
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		// Play Ragdoll
+
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->AddImpulse(FVector(100.0, 10.0, 10.0));
+		// Disable Movement
+		//GetMovementComponent()->StopMovementImmediately();
+		// Detach the controller Controller
+		DetachFromControllerPendingDestroy();
+		// Disable Collision
+
+		// Set a Timer to delete the mesh
+		SetLifeSpan(10.0f);
+	}
 }
 
 FVector ASCharacter::GetPawnViewLocation() const

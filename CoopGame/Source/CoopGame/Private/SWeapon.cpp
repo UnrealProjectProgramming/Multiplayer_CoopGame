@@ -97,7 +97,7 @@ void ASWeapon::Fire()
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 			}
-
+			
 			TracerEndPoint = Hit.ImpactPoint;
 		}
 		if (DebugWeaponDrawing > 0)
