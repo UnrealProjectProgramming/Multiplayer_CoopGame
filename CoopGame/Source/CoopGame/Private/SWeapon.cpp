@@ -35,6 +35,9 @@ ASWeapon::ASWeapon()
 	HeadShotDamageMultiplier = 4.0f;
 
 	RateOfFire = 600.0f;
+
+	// Network
+	SetReplicates(true);
 }
 
 

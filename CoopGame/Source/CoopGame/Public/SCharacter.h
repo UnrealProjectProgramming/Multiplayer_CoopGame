@@ -78,6 +78,7 @@ protected:
 	/* Default FOV which is set during the gameplay ! */
 	float DefaultFOV;
 
+	UPROPERTY(Replicated)
 	ASWeapon* CurrentWeapon;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
