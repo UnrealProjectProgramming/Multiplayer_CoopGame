@@ -84,7 +84,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USHealthComponent* HealthComp;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 	bool bDied;
 
 public:	

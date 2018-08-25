@@ -26,7 +26,7 @@ protected:
 	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "HealthComponent")
 	float Health;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")

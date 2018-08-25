@@ -174,17 +174,12 @@ void ASCharacter::OnHealthChanged(USHealthComponent* HealthComp, float Health, f
 	{
 		// Die
 		bDied = true;  // Playing death animation 
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		// Play Ragdoll
-
-		GetMesh()->SetSimulatePhysics(true);
-		GetMesh()->AddImpulse(FVector(100.0, 10.0, 10.0));
+		// Set Collision
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// Disable Movement
-		//GetMovementComponent()->StopMovementImmediately();
+		GetMovementComponent()->StopMovementImmediately();
 		// Detach the controller Controller
 		DetachFromControllerPendingDestroy();
-		// Disable Collision
-
 		// Set a Timer to delete the mesh
 		SetLifeSpan(10.0f);
 	}
@@ -207,4 +202,5 @@ void ASCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASCharacter, CurrentWeapon);
+	DOREPLIFETIME(ASCharacter, bDied);
 }

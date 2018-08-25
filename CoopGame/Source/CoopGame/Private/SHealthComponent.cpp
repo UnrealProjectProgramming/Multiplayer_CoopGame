@@ -2,16 +2,19 @@
 
 #include "SHealthComponent.h"
 
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 USHealthComponent::USHealthComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	DefaultHealth = 100;
 	Health = 100;
+	
+	SetIsReplicated(true);
 }
 
 
@@ -20,10 +23,13 @@ void USHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AActor* MyOwner = GetOwner();
-	if (MyOwner)
+	if (GetOwnerRole() == ROLE_Authority)
 	{
-		MyOwner->OnTakeAnyDamage.AddDynamic(this, &USHealthComponent::HandleTakeAnyDamage);
+		AActor* MyOwner = GetOwner();
+		if (MyOwner)
+		{
+			MyOwner->OnTakeAnyDamage.AddDynamic(this, &USHealthComponent::HandleTakeAnyDamage);
+		}
 	}
 	DefaultHealth = Health;
 }
@@ -42,3 +48,9 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 	UE_LOG(LogTemp, Warning, TEXT("Health Changed:  %s"), *FString::SanitizeFloat(Health));
 }
 
+void USHealthComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USHealthComponent, Health);
+}
