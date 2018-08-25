@@ -18,8 +18,9 @@ struct FHitScanTrace
 	GENERATED_BODY()
 
 public:
+	// we converd the physical surface to  TEnum As byte so It can be saved in the struct and can be replicated.
 	UPROPERTY()
-	FVector_NetQuantize TraceFrom;
+	TEnumAsByte<EPhysicalSurface> SurfaceType;
 
 	UPROPERTY()
 	FVector_NetQuantize TraceTo;
@@ -95,6 +96,8 @@ public:
 
 	
 	virtual void Fire();
+
+	void PlayImpactEffect(EPhysicalSurface SurfaceType, FVector ImpactPoint);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerFire();
