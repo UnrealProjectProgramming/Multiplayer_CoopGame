@@ -8,6 +8,7 @@
 #include "NavigationSystem.h"
 #include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
+#include "SHealthComponent.h"
 
 
 
@@ -23,6 +24,9 @@ ASTrackerBot::ASTrackerBot()
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
 
+
+	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("Health Component"));
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
 
 	MovementForce = 1000.0f;
 	Accurecy = 50.0f;
@@ -86,4 +90,11 @@ void ASTrackerBot::MoveToPlayer()
 	}
 
 	DrawDebugSphere(GetWorld(), NextPathPoint, 32, 12, FColor::Red, false, 0.0f);
+}
+
+void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	// Expload ! 
+
+	UE_LOG(LogTemp, Warning, TEXT("health changed: %s  by  %s"), *FString::SanitizeFloat(Health), *GetName());
 }
