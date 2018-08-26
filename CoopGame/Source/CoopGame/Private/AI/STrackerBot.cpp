@@ -12,6 +12,7 @@
 
 
 
+
 // Sets default values
 ASTrackerBot::ASTrackerBot()
 {
@@ -95,6 +96,16 @@ void ASTrackerBot::MoveToPlayer()
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	// Expload ! 
+
+	if (MatInstDynamic == nullptr)
+	{
+		MatInstDynamic = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+
+	if (MatInstDynamic)
+	{
+		MatInstDynamic->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("health changed: %s  by  %s"), *FString::SanitizeFloat(Health), *GetName());
 }

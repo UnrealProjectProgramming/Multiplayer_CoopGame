@@ -7,6 +7,7 @@
 #include "STrackerBot.generated.h"
 
 class USHealthComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class COOPGAME_API ASTrackerBot : public APawn
@@ -48,6 +49,8 @@ protected:
 	bool bUseVelocityChange;
 
 	FVector NextPathPoint;
+
+	UMaterialInstanceDynamic* MatInstDynamic;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
