@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
 #include "SHealthComponent.h"
+#include "Particles/ParticleSystem.h"
 
 
 
@@ -29,6 +30,9 @@ ASTrackerBot::ASTrackerBot()
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("Health Component"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
 
+
+	ExplosionDamage = 100.0f;
+	ExplosionRadius = 200.0f;
 	MovementForce = 1000.0f;
 	Accurecy = 50.0f;
 	bUseVelocityChange = true;
@@ -93,9 +97,16 @@ void ASTrackerBot::MoveToPlayer()
 	DrawDebugSphere(GetWorld(), NextPathPoint, 32, 12, FColor::Red, false, 0.0f);
 }
 
+
+
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	// Expload ! 
+
+	if (Health <= 0)
+	{
+		SelfDestruct();
+	}
 
 	if (MatInstDynamic == nullptr)
 	{
@@ -108,4 +119,26 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float H
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("health changed: %s  by  %s"), *FString::SanitizeFloat(Health), *GetName());
+}
+
+
+void ASTrackerBot::SelfDestruct()
+{
+	if (bExploaded)
+	{
+		return;
+	}
+
+	bExploaded = true;
+
+	UGameplayStatics::SpawnEmitterAtLocation(this, ExploasinEffect, GetActorLocation());
+
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(this);
+
+	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), false);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 32, FColor::Purple, true, 5.0);
+
+	Destroy();
 }

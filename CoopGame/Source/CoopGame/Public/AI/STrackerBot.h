@@ -8,6 +8,7 @@
 
 class USHealthComponent;
 class UMaterialInstanceDynamic;
+class UParticleSystem;
 
 UCLASS()
 class COOPGAME_API ASTrackerBot : public APawn
@@ -29,6 +30,8 @@ protected:
 
 	void MoveToPlayer();
 
+	void SelfDestruct();
+
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
@@ -40,6 +43,12 @@ protected:
 	USHealthComponent* HealthComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float ExplosionRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float ExplosionDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float MovementForce;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
@@ -48,9 +57,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	bool bUseVelocityChange;
 
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	UParticleSystem* ExploasinEffect;
+
+
+
+	bool bExploaded;
+
 	FVector NextPathPoint;
 
 	UMaterialInstanceDynamic* MatInstDynamic;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
