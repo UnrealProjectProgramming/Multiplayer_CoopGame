@@ -3,6 +3,11 @@
 #include "STrackerBot.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
+#include "GameFramework/Character.h"
+
 
 
 // Sets default values
@@ -23,6 +28,24 @@ void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+FVector ASTrackerBot::GetNextPathPoint()
+{
+
+	ACharacter* PlayerPawn = UGameplayStatics::GetPlayerCharacter(this, 0);
+	if (!PlayerPawn) { return FVector::ZeroVector; }
+
+	// To use UNavigationSystemV1 this we must add NavigationSystem in the CoopGame.Build.cs module.
+	auto NavPath = UNavigationSystemV1::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn, 50.0f);
+
+	if (NavPath->PathPoints.Num() > 1)
+	{
+		// Return next point in the path
+		return NavPath->PathPoints[1];
+	}
+	// if it fails return actor location!
+	return GetActorLocation();
 }
 
 // Called every frame

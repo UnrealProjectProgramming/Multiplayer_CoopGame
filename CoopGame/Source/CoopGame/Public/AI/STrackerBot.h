@@ -11,13 +11,19 @@ class COOPGAME_API ASTrackerBot : public APawn
 {
 	GENERATED_BODY()
 
+
+
 public:
 	// Sets default values for this pawn's properties
 	ASTrackerBot();
 
+	UFUNCTION()
+	FVector GetNextPathPoint();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
