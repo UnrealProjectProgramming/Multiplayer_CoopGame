@@ -12,7 +12,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Components/SphereComponent.h"
 #include "SCharacter.h"
-
+#include "Sound/SoundCue.h"
 
 
 
@@ -27,6 +27,7 @@ ASTrackerBot::ASTrackerBot()
 	MovementForce = 1000.0f;
 	Accurecy = 50.0f;
 	bUseVelocityChange = true;
+	SelfDestructInterval = 0.5f;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComp->SetCanEverAffectNavigation(false);
@@ -146,6 +147,7 @@ void ASTrackerBot::SelfDestruct()
 	IgnoredActors.Add(this);
 
 	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), false);
+	UGameplayStatics::PlaySoundAtLocation(this, ExploasionSound, GetActorLocation());
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 32, FColor::Purple, true, 5.0);
 
@@ -167,7 +169,9 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 	ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
 	if (PlayerPawn)
 	{
-		GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+		GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDestructInterval, true, 0.0f);
 		bStartedSelfDestruction = true;
+
+		UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 	}
 }
