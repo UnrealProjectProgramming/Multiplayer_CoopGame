@@ -10,6 +10,8 @@
 #include "DrawDebugHelpers.h"
 #include "SHealthComponent.h"
 #include "Particles/ParticleSystem.h"
+#include "Components/SphereComponent.h"
+#include "SCharacter.h"
 
 
 
@@ -20,22 +22,29 @@ ASTrackerBot::ASTrackerBot()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	ExplosionDamage = 100.0f;
+	ExplosionRadius = 200.0f;
+	MovementForce = 1000.0f;
+	Accurecy = 50.0f;
+	bUseVelocityChange = true;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComp->SetCanEverAffectNavigation(false);
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
 
-
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("Health Component"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
 
+	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Component"));
+	SphereComp->SetupAttachment(RootComponent);
+	SphereComp->SetSphereRadius(ExplosionRadius);
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-	ExplosionDamage = 100.0f;
-	ExplosionRadius = 200.0f;
-	MovementForce = 1000.0f;
-	Accurecy = 50.0f;
-	bUseVelocityChange = true;
+
+
 }
 
 // Called when the game starts or when spawned
@@ -74,6 +83,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 	MoveToPlayer();
 }
 
+
 void ASTrackerBot::MoveToPlayer()
 {
 	float DistanceToPlayer = FVector::Distance(GetActorLocation(), NextPathPoint);
@@ -96,7 +106,6 @@ void ASTrackerBot::MoveToPlayer()
 
 	DrawDebugSphere(GetWorld(), NextPathPoint, 32, 12, FColor::Red, false, 0.0f);
 }
-
 
 
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
@@ -141,4 +150,24 @@ void ASTrackerBot::SelfDestruct()
 	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 32, FColor::Purple, true, 5.0);
 
 	Destroy();
+}
+
+void ASTrackerBot::DamageSelf()
+{
+	UGameplayStatics::ApplyDamage(this, 20.0, GetInstigatorController(), this, nullptr);
+}
+
+void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	if (bStartedSelfDestruction)
+	{
+		return;
+	}
+
+	ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
+	if (PlayerPawn)
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+		bStartedSelfDestruction = true;
+	}
 }
