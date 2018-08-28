@@ -9,6 +9,8 @@
 class USphereComponent;
 class UDecalComponent;
 
+class ASPowerupActor;
+
 UCLASS()
 class COOPGAME_API ASPickupActor : public AActor
 {
@@ -24,6 +26,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void Respawn();
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -31,5 +36,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UDecalComponent* DecalComp;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "PowerupSpawnClass")
+	TSubclassOf<ASPowerupActor> PowerupClass;
+
+	/* Powerup cool down in seconds */
+	UPROPERTY(EditDefaultsOnly, Category = "PowerupSpawnClass")
+	float CoolDownDuration;
+
+	ASPowerupActor* CurrentPowerupInstance;
+
+	FTimerHandle TimerHandle_Respawn;
 	
 };

@@ -4,6 +4,9 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/DecalComponent.h"
+#include "TimerManager.h"
+
+#include "SPowerupActor.h"
 
 // Sets default values
 ASPickupActor::ASPickupActor()
@@ -11,6 +14,7 @@ ASPickupActor::ASPickupActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	CoolDownDuration = 5.0f;
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Component"));
 	RootComponent = SphereComp;
@@ -28,6 +32,22 @@ void ASPickupActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Respawn();
+}
+
+
+void ASPickupActor::Respawn()
+{
+	if (!PowerupClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PowerupClass is nullptr in %s, please update your blueprint."), *GetName());
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	CurrentPowerupInstance = GetWorld()->SpawnActor<ASPowerupActor>(PowerupClass, GetTransform(), SpawnParams);
 }
 
 
@@ -35,7 +55,13 @@ void ASPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	// @TODO : add power ups ! 
+	if (CurrentPowerupInstance)
+	{
+		CurrentPowerupInstance->ActivatePowerup();
+		CurrentPowerupInstance = nullptr;
+
+		GetWorldTimerManager().SetTimer(TimerHandle_Respawn, this, &ASPickupActor::Respawn, CoolDownDuration);
+	}
 }
 
 
