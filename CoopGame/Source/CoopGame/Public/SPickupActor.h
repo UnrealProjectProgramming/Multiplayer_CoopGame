@@ -41,7 +41,7 @@ protected:
 	TSubclassOf<ASPowerupActor> PowerupClass;
 
 	/* Powerup cool down in seconds */
-	UPROPERTY(EditDefaultsOnly, Category = "PowerupSpawnClass")
+	UPROPERTY(EditInstanceOnly, Category = "PowerupSpawnClass")
 	float CoolDownDuration;
 
 	ASPowerupActor* CurrentPowerupInstance;
