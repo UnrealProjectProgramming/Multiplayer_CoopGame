@@ -19,7 +19,7 @@
 // Sets default values
 ASTrackerBot::ASTrackerBot()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ExplosionDamage = 100.0f;
@@ -44,7 +44,7 @@ ASTrackerBot::ASTrackerBot()
 	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-
+	SetReplicates(true);
 
 }
 
@@ -52,8 +52,10 @@ ASTrackerBot::ASTrackerBot()
 void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	NextPathPoint = GetNextPathPoint();
+	if (Role == ROLE_Authority)
+	{
+		NextPathPoint = GetNextPathPoint();
+	}
 }
 
 
@@ -65,6 +67,8 @@ FVector ASTrackerBot::GetNextPathPoint()
 
 	// To use UNavigationSystemV1 this we must add NavigationSystem in the CoopGame.Build.cs module.
 	auto NavPath = UNavigationSystemV1::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn, 50.0f);
+
+	if (!NavPath) { return FVector::ZeroVector; }
 
 	if (NavPath->PathPoints.Num() > 1)
 	{
@@ -82,30 +86,34 @@ void ASTrackerBot::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	MoveToPlayer();
+
 }
 
 
 void ASTrackerBot::MoveToPlayer()
 {
-	float DistanceToPlayer = FVector::Distance(GetActorLocation(), NextPathPoint);
-
-	if (DistanceToPlayer <= Accurecy)
+	if (Role == ROLE_Authority)
 	{
-		NextPathPoint = GetNextPathPoint();
+		float DistanceToPlayer = FVector::Distance(GetActorLocation(), NextPathPoint);
 
-		DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached !", this, FColor::Cyan);
+		if (DistanceToPlayer <= Accurecy)
+		{
+			NextPathPoint = GetNextPathPoint();
+
+			DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached !", this, FColor::Cyan);
+		}
+		else
+		{
+			FVector ForceDirection = NextPathPoint - GetActorLocation();
+			ForceDirection.Normalize();
+			ForceDirection *= MovementForce;
+
+			MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
+			DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + NextPathPoint, 36, FColor::Green, false, 0.0f);
+		}
+
+		DrawDebugSphere(GetWorld(), NextPathPoint, 32, 12, FColor::Red, false, 0.0f);
 	}
-	else
-	{
-		FVector ForceDirection = NextPathPoint - GetActorLocation();
-		ForceDirection.Normalize();
-		ForceDirection *= MovementForce;
-
-		MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
-		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + NextPathPoint, 36, FColor::Green, false, 0.0f);
-	}
-
-	DrawDebugSphere(GetWorld(), NextPathPoint, 32, 12, FColor::Red, false, 0.0f);
 }
 
 
