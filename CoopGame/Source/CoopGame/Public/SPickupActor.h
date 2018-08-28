@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UDecalComponent* DecalComp;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "PowerupSpawnClass")
+	UPROPERTY(EditInstanceOnly, Category = "PowerupSpawnClass")
 	TSubclassOf<ASPowerupActor> PowerupClass;
 
 	/* Powerup cool down in seconds */

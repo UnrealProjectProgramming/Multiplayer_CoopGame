@@ -28,6 +28,9 @@ protected:
 	UFUNCTION()
 	void OnRep_Health(float OldHealth);
 
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+	void Heal(float HealAmount);
+
 protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Health, BlueprintReadOnly, Category = "HealthComponent")
