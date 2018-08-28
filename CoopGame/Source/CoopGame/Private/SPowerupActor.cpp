@@ -26,7 +26,6 @@ void ASPowerupActor::BeginPlay()
 void ASPowerupActor::OnTickPowerup()
 {
 	TicksProcessed++;
-
 	OnPowerupTicked();
 
 	if (TicksProcessed >= TotalNumberOfTicks)
@@ -40,12 +39,15 @@ void ASPowerupActor::OnTickPowerup()
 
 void ASPowerupActor::ActivatePowerup()
 {
+	OnActivated();
+
 	if (PowerupInterval > 0.0f)
 	{
-		GetWorldTimerManager().SetTimer(TimerHandle_PowerupTick, this, &ASPowerupActor::OnTickPowerup, PowerupInterval, true, 0.0f);
+		GetWorldTimerManager().SetTimer(TimerHandle_PowerupTick, this, &ASPowerupActor::OnTickPowerup, PowerupInterval, true);
 	}
 	else
 	{
+		
 		OnTickPowerup();
 	}
 
