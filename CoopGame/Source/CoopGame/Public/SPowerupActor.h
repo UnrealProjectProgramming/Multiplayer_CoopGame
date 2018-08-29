@@ -15,13 +15,13 @@ public:
 	// Sets default values for this actor's properties
 	ASPowerupActor();
 
-	void ActivatePowerup();
+	void ActivatePowerup(AActor* ActivateForActor);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
-	void OnActivated();
+	void OnActivated(AActor* ActivateForActor);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
-	void OnPowerupTicked();
+	void OnPowerupTicked(AActor* ActivateForActor);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
 	void OnExpierd();
@@ -30,7 +30,7 @@ public:
 	void OnPowerStateChanged(bool bNewIsActive);
 
 	UFUNCTION()
-	void OnTickPowerup();
+	void OnTickPowerup(AActor* ActivateForActor);
 
 protected:
 	

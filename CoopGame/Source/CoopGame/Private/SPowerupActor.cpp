@@ -3,6 +3,7 @@
 #include "SPowerupActor.h"
 
 #include "Net/UnrealNetwork.h"
+#include "TimerManager.h"
 
 // Sets default values
 ASPowerupActor::ASPowerupActor()
@@ -18,10 +19,10 @@ ASPowerupActor::ASPowerupActor()
 }
 
 
-void ASPowerupActor::OnTickPowerup()
+void ASPowerupActor::OnTickPowerup(AActor* ActivateForActor)
 {
 	TicksProcessed++;
-	OnPowerupTicked();
+	OnPowerupTicked(ActivateForActor);
 
 	if (TicksProcessed >= TotalNumberOfTicks)
 	{
@@ -43,20 +44,27 @@ void ASPowerupActor::OnRep_PowerupActive()
 
 
 
-void ASPowerupActor::ActivatePowerup()
+void ASPowerupActor::ActivatePowerup(AActor* ActivateForActor)
 {
-	OnActivated();
+	OnActivated(ActivateForActor);
 	
 	bIsPowerupActive = true;
 	OnRep_PowerupActive();
 
 	if (PowerupInterval > 0.0f)
 	{
-		GetWorldTimerManager().SetTimer(TimerHandle_PowerupTick, this, &ASPowerupActor::OnTickPowerup, PowerupInterval, true);
+		/*
+			using timer delegete so we can be able to Bind a UFUNCTION,
+			by doing this we can pass the function with parameters 
+		*/
+		FTimerDelegate TimerDelegate_OnTickPowerup;
+		TimerDelegate_OnTickPowerup.BindUFunction(this, FName("OnTickPowerup"), ActivateForActor);
+
+		GetWorldTimerManager().SetTimer(TimerHandle_PowerupTick, TimerDelegate_OnTickPowerup, PowerupInterval, true);
 	}
 	else
 	{
-		OnTickPowerup();
+		OnTickPowerup(ActivateForActor);
 	}
 }
 
