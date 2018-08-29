@@ -2,6 +2,7 @@
 
 #include "SPowerupActor.h"
 
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASPowerupActor::ASPowerupActor()
@@ -12,14 +13,8 @@ ASPowerupActor::ASPowerupActor()
 	TotalNumberOfTicks = 0;
 
 	PowerupInterval = 0.0f;
-}
 
-
-// Called when the game starts or when spawned
-void ASPowerupActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
+	SetReplicates(true);
 }
 
 
@@ -31,15 +26,29 @@ void ASPowerupActor::OnTickPowerup()
 	if (TicksProcessed >= TotalNumberOfTicks)
 	{
 		OnExpierd();
+
+		bIsPowerupActive = false;
+		OnRep_PowerupActive();
+
 		// Delete Timer !
 		GetWorldTimerManager().ClearTimer(TimerHandle_PowerupTick);
 	}
 }
 
 
+void ASPowerupActor::OnRep_PowerupActive()
+{
+	OnPowerStateChanged(bIsPowerupActive);
+}
+
+
+
 void ASPowerupActor::ActivatePowerup()
 {
 	OnActivated();
+	
+	bIsPowerupActive = true;
+	OnRep_PowerupActive();
 
 	if (PowerupInterval > 0.0f)
 	{
@@ -47,8 +56,12 @@ void ASPowerupActor::ActivatePowerup()
 	}
 	else
 	{
-		
 		OnTickPowerup();
 	}
+}
 
+void ASPowerupActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASPowerupActor, bIsPowerupActive);
 }

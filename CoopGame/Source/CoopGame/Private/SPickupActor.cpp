@@ -24,6 +24,8 @@ ASPickupActor::ASPickupActor()
 	DecalComp->SetupAttachment(RootComponent);
 	DecalComp->SetRelativeRotation(FRotator(90, 0, 0));
 	DecalComp->DecalSize = FVector(65, 75, 75);
+
+	SetReplicates(true);
 }
 
 
@@ -31,13 +33,16 @@ ASPickupActor::ASPickupActor()
 void ASPickupActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	Respawn();
+	if (Role == ROLE_Authority)
+	{
+		Respawn();
+	}
 }
 
 
 void ASPickupActor::Respawn()
 {
+	
 	if (!PowerupClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PowerupClass is nullptr in %s, please update your blueprint."), *GetName());
@@ -46,8 +51,9 @@ void ASPickupActor::Respawn()
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
+
 	CurrentPowerupInstance = GetWorld()->SpawnActor<ASPowerupActor>(PowerupClass, GetTransform(), SpawnParams);
+	
 }
 
 
@@ -55,7 +61,7 @@ void ASPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if (CurrentPowerupInstance)
+	if (Role==ROLE_Authority && CurrentPowerupInstance)
 	{
 		CurrentPowerupInstance->ActivatePowerup();
 		CurrentPowerupInstance = nullptr;

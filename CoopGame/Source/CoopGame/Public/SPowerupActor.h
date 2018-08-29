@@ -26,13 +26,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
 	void OnExpierd();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
+	void OnPowerStateChanged(bool bNewIsActive);
+
 	UFUNCTION()
 	void OnTickPowerup();
 
-
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	
+	UFUNCTION()
+	void OnRep_PowerupActive();
 
 protected:
 
@@ -41,6 +44,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
 	int32 TotalNumberOfTicks;
+
+	UPROPERTY(ReplicatedUsing = OnRep_PowerupActive)
+	bool bIsPowerupActive;
 
 	int32 TicksProcessed;
 
