@@ -2,7 +2,7 @@
 
 #include "SGameMode.h"
 
-
+#include "TimerManager.h"
 
 /*
 	Important Notes: GAME MODE
@@ -26,3 +26,52 @@
 	That contains all of the persistent information of a player and that is because the player controller also does not exist on other clients
 	it only exist on YOUR MACHINE and on the server.
 */
+
+ASGameMode::ASGameMode()
+{
+	TimeBetweenWaves = 5;
+}
+
+
+void ASGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+	PrepareForNextWave();
+}
+
+void ASGameMode::StartWave()
+{
+	WaveCount++;
+
+	NumberOfBotsToSpawn = 2 * WaveCount;
+
+	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBot, this, &ASGameMode::SpawnBotTimerElapsed, 2.0, true, 0.0f);
+}
+
+
+void ASGameMode::SpawnBotTimerElapsed()
+{
+	SpawnNewBot();
+
+	NumberOfBotsToSpawn--;
+
+	if (NumberOfBotsToSpawn <= 0)
+	{
+		EndWave();
+	}
+}
+
+void ASGameMode::EndWave()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_SpawnBot);
+	PrepareForNextWave();
+}
+
+
+void ASGameMode::PrepareForNextWave()
+{
+	FTimerHandle TimerHandle_NextWaveStart;
+
+	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ASGameMode::StartWave, TimeBetweenWaves, false);
+}
