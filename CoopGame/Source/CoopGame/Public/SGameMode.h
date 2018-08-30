@@ -20,12 +20,15 @@ public:
 	/** Transitions to calls BeginPlay on actors. */
 	virtual void StartPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "SGameMode")
 	float TimeBetweenWaves;
 
 	FTimerHandle TimerHandle_SpawnBot;
+
+	FTimerHandle TimerHandle_NextWaveStart;
 
 	int32 NumberOfBotsToSpawn;
 
@@ -44,6 +47,8 @@ protected:
 
 	// Set Timer for next wave
 	void PrepareForNextWave();
+
+	void CheckWaveState();
 	
 	UFUNCTION()
 	void SpawnBotTimerElapsed();

@@ -42,4 +42,6 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnHealthChangedSignature OnHealthChanged;
+
+	float GetHealth() const { return Health; }
 };

@@ -2,6 +2,7 @@
 
 #include "SGameMode.h"
 
+#include "SHealthComponent.h"
 #include "TimerManager.h"
 
 /*
@@ -30,6 +31,8 @@
 ASGameMode::ASGameMode()
 {
 	TimeBetweenWaves = 5;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 1.0f;
 }
 
 
@@ -38,6 +41,13 @@ void ASGameMode::StartPlay()
 	Super::StartPlay();
 
 	PrepareForNextWave();
+}
+
+void ASGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	CheckWaveState();
 }
 
 void ASGameMode::StartWave()
@@ -65,13 +75,47 @@ void ASGameMode::SpawnBotTimerElapsed()
 void ASGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_SpawnBot);
-	PrepareForNextWave();
+}
+
+
+void ASGameMode::CheckWaveState()
+{
+
+	bool bIsPreparingForWave = GetWorldTimerManager().IsTimerActive(TimerHandle_NextWaveStart);
+
+	if (NumberOfBotsToSpawn > 0 || bIsPreparingForWave)
+	{
+		return;
+	}
+
+	bool bIsAnybotAlive = false;
+
+	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+	{
+		APawn* TestPawn = It->Get();
+		if (TestPawn == nullptr || TestPawn->IsPlayerControlled())
+		{
+			continue;
+		}
+		
+		USHealthComponent* HealthComp = Cast<USHealthComponent>(TestPawn->GetComponentByClass(USHealthComponent::StaticClass()));
+
+		if (HealthComp && HealthComp->GetHealth() > 0)
+		{
+			bIsAnybotAlive = true;
+			break;
+		}
+	}
+
+	if (!bIsAnybotAlive)
+	{
+		PrepareForNextWave();
+	}
+
 }
 
 
 void ASGameMode::PrepareForNextWave()
 {
-	FTimerHandle TimerHandle_NextWaveStart;
-
 	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ASGameMode::StartWave, TimeBetweenWaves, false);
 }
