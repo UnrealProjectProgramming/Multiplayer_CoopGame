@@ -4,6 +4,8 @@
 
 #include "SHealthComponent.h"
 #include "TimerManager.h"
+#include "SGameState.h"
+
 
 /*
 	Important Notes: GAME MODE
@@ -30,6 +32,8 @@
 
 ASGameMode::ASGameMode()
 {
+	GameStateClass = ASGameState::StaticClass();
+
 	TimeBetweenWaves = 5;
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 1.0f;
@@ -144,6 +148,15 @@ void ASGameMode::GameOver()
 	// @TODO: Finish up the match and present game over to the player along with game stats.
 
 	UE_LOG(LogTemp, Warning, TEXT("Game Over: Owari da"));
+}
+
+void ASGameMode::SetWaveState(EWaveState NewState)
+{
+	ASGameState* GM = GetGameState<ASGameState>();
+	if (ensureAlways(GM))
+	{
+		GM->WaveState = NewState;
+	}
 }
 
 void ASGameMode::PrepareForNextWave()

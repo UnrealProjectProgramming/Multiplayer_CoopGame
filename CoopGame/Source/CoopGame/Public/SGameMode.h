@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "SGameMode.generated.h"
 
+enum class EWaveState : uint8;
+
 /**
  * 
  */
@@ -53,6 +55,8 @@ protected:
 	void CheckAnyPlayerAlive();
 
 	void GameOver();
+
+	void SetWaveState(EWaveState NewState);
 	
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
