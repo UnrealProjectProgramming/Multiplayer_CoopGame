@@ -48,6 +48,7 @@ void ASGameMode::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	CheckWaveState();
+	CheckAnyPlayerAlive();
 }
 
 void ASGameMode::StartWave()
@@ -114,6 +115,36 @@ void ASGameMode::CheckWaveState()
 
 }
 
+
+void ASGameMode::CheckAnyPlayerAlive()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn())
+		{
+			APawn* MyPawn = PC->GetPawn();
+			USHealthComponent* HealthComp = Cast<USHealthComponent>(MyPawn->GetComponentByClass(USHealthComponent::StaticClass()));
+			if (ensure(HealthComp) && HealthComp->GetHealth() > 0.0f)
+			{
+				return;
+			}
+		}
+	}
+
+	// All players are dead. 
+
+	GameOver();
+}
+
+void ASGameMode::GameOver()
+{
+	EndWave();
+
+	// @TODO: Finish up the match and present game over to the player along with game stats.
+
+	UE_LOG(LogTemp, Warning, TEXT("Game Over: Owari da"));
+}
 
 void ASGameMode::PrepareForNextWave()
 {
