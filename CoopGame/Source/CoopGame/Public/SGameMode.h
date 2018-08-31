@@ -23,6 +23,8 @@ public:
 	virtual void StartPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "SGameMode")

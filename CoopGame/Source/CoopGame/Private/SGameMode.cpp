@@ -36,13 +36,15 @@ ASGameMode::ASGameMode()
 
 	TimeBetweenWaves = 5;
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.TickInterval = 1.0f;
+	PrimaryActorTick.TickInterval = 0.5;
 }
 
 
 void ASGameMode::StartPlay()
 {
 	Super::StartPlay();
+
+	SetWaveState(EWaveState::StartGame);
 
 	PrepareForNextWave();
 }
@@ -62,6 +64,8 @@ void ASGameMode::StartWave()
 	NumberOfBotsToSpawn = 2 * WaveCount;
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBot, this, &ASGameMode::SpawnBotTimerElapsed, 2.0, true, 0.0f);
+
+	SetWaveState(EWaveState::WaveInProgress);
 }
 
 
@@ -80,6 +84,7 @@ void ASGameMode::SpawnBotTimerElapsed()
 void ASGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_SpawnBot);
+	SetWaveState(EWaveState::WaitingToComplete);
 }
 
 
@@ -114,6 +119,7 @@ void ASGameMode::CheckWaveState()
 
 	if (!bIsAnybotAlive)
 	{
+		SetWaveState(EWaveState::WaveComplete);
 		PrepareForNextWave();
 	}
 
@@ -145,6 +151,8 @@ void ASGameMode::GameOver()
 {
 	EndWave();
 
+	SetWaveState(EWaveState::GameOver);
+
 	// @TODO: Finish up the match and present game over to the player along with game stats.
 
 	UE_LOG(LogTemp, Warning, TEXT("Game Over: Owari da"));
@@ -155,11 +163,12 @@ void ASGameMode::SetWaveState(EWaveState NewState)
 	ASGameState* GM = GetGameState<ASGameState>();
 	if (ensureAlways(GM))
 	{
-		GM->WaveState = NewState;
+		GM->SetWaveState(NewState);
 	}
 }
 
 void ASGameMode::PrepareForNextWave()
 {
 	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ASGameMode::StartWave, TimeBetweenWaves, false);
+	SetWaveState(EWaveState::WaitingForStart);
 }
