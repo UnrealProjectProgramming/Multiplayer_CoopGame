@@ -8,6 +8,9 @@
 
 enum class EWaveState : uint8;
 
+// Custom Event
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor, AController*, KillerController);
+
 /**
  * 
  */
@@ -24,6 +27,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	UPROPERTY(BlueprintAssignable, Category = "SGameMode")
+	FOnActorKilled OnActorKilled;
 
 protected:
 
@@ -62,4 +67,6 @@ protected:
 	
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
+
+
 };

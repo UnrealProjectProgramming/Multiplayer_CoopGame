@@ -5,6 +5,7 @@
 #include "SHealthComponent.h"
 #include "TimerManager.h"
 #include "SGameState.h"
+#include "SPlayerState.h"
 
 
 /*
@@ -33,6 +34,7 @@
 ASGameMode::ASGameMode()
 {
 	GameStateClass = ASGameState::StaticClass();
+	PlayerStateClass = ASPlayerState::StaticClass();
 
 	TimeBetweenWaves = 5;
 	PrimaryActorTick.bCanEverTick = true;
