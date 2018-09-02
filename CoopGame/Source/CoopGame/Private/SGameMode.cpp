@@ -83,6 +83,20 @@ void ASGameMode::SpawnBotTimerElapsed()
 	}
 }
 
+
+void ASGameMode::RestartDeadPlayer()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn() == nullptr)
+		{
+			RestartPlayer(PC);
+		}
+	}
+}
+
+
 void ASGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_SpawnBot);
@@ -172,5 +186,6 @@ void ASGameMode::SetWaveState(EWaveState NewState)
 void ASGameMode::PrepareForNextWave()
 {
 	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ASGameMode::StartWave, TimeBetweenWaves, false);
+	RestartDeadPlayer();
 	SetWaveState(EWaveState::WaitingForStart);
 }

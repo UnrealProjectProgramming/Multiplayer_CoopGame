@@ -68,5 +68,6 @@ protected:
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
+	void RestartDeadPlayer();
 
 };
