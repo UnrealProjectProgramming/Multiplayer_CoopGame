@@ -16,6 +16,8 @@ USHealthComponent::USHealthComponent()
 	Health = 100;
 	bIsDead = false;
 	
+	TeamNumber = 255;
+
 	SetIsReplicated(true);
 }
 
@@ -40,6 +42,12 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 {
 	if (Damage <= 0.0f || bIsDead)
 	{
+		return;
+	}
+
+	if (DamageCauser != DamagedActor && IsFriendly(DamagedActor, DamageCauser))
+	{
+		// We don't wanna apply any friendly Fire.
 		return;
 	}
 
@@ -83,9 +91,32 @@ void USHealthComponent::Heal(float HealAmount)
 
 }
 
+
+bool USHealthComponent::IsFriendly(AActor* ActorA, AActor* ActorB)
+{
+	if (ActorA == nullptr || ActorB == nullptr)
+	{ 	
+		// Assume Friendly
+		return true; 
+	}
+
+	USHealthComponent* HealthCompA = Cast<USHealthComponent>(ActorA->GetComponentByClass(USHealthComponent::StaticClass()));
+	USHealthComponent* HealthCompB = Cast<USHealthComponent>(ActorB->GetComponentByClass(USHealthComponent::StaticClass()));
+
+	if (HealthCompA == nullptr || HealthCompB == nullptr)
+	{
+		//Assume Friendly
+		return true;
+	}
+
+	return HealthCompA->TeamNumber == HealthCompB->TeamNumber;
+}
+
+
 void USHealthComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(USHealthComponent, Health);
+
 }

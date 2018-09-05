@@ -18,6 +18,11 @@ public:
 	// Sets default values for this component's properties
 	USHealthComponent();
 
+	/*Number of Teams in the session  ( Maximum 255 ) */
+	// we don't want it to be replicated because it is not gonna change in run time but if we wanna have team change then we must make it replicated.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponent")
+	uint8 TeamNumber;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -45,4 +50,7 @@ public:
 	FOnHealthChangedSignature OnHealthChanged;
 
 	float GetHealth() const { return Health; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "HealthComponent")
+	static bool IsFriendly(AActor* ActorA, AActor* ActorB);
 };

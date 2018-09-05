@@ -99,7 +99,7 @@ void ASWeapon::Fire()
 				ActualDamage *= HeadShotDamageMultiplier;
 			}
 
-			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, HitDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, HitDirection, Hit, MyOwner->GetInstigatorController(), MyOwner, DamageType);
 
 			PlayImpactEffect(SurfaceType, Hit.ImpactPoint);
 
