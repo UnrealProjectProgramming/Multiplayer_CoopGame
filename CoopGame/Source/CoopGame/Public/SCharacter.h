@@ -22,6 +22,12 @@ public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void StopFire();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,9 +48,6 @@ protected:
 
 	void EndZoom();
 	
-	void StartFire();
-
-	void StopFire();
 
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
@@ -84,8 +87,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USHealthComponent* HealthComp;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
-	bool bDied;
 
 public:	
 	// Called every frame
@@ -97,6 +98,10 @@ public:
 
 
 	virtual FVector GetPawnViewLocation() const override;
+
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
+	bool bDied;
 
 	
 };
