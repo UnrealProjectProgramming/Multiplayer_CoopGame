@@ -33,6 +33,7 @@ ASWeapon::ASWeapon()
 	TracerTargetName = "Target";
 
 	BaseDamage = 25.0f;
+	BulletSpread = 10.0f;
 	HeadShotDamageMultiplier = 4.0f;
 
 	RateOfFire = 600.0f;
@@ -67,9 +68,15 @@ void ASWeapon::Fire()
 		FVector EyeLocation;
 		FRotator EyeRotation;
 		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
 		FVector HitDirection = EyeRotation.Vector();
+		float HalfRad = FMath::DegreesToRadians(BulletSpread);
+		HitDirection = FMath::VRandCone(HitDirection, HalfRad, HalfRad);
+
+
 		FVector TraceEnd = EyeLocation + (HitDirection * 10000);
 		FVector TracerEndPoint = TraceEnd;
+
 
 		EPhysicalSurface SurfaceType = SurfaceType_Default;
 
