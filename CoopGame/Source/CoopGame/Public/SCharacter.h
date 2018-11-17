@@ -47,6 +47,10 @@ protected:
 	void BeginZoom();
 
 	void EndZoom();
+
+	void BeginRunning();
+
+	void EndRunning();
 	
 
 	UFUNCTION()
@@ -103,5 +107,8 @@ public:
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 	bool bDied;
 
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	bool bIsRunning;
 	
 };
