@@ -6,9 +6,9 @@
 
 ### A Coop multiplayer game made with ue4.
 
-FIX THE GIF !
 
-![Alt Text](https://media.giphy.com/media/9AI3BMj8FLat0Izea6/giphy.gif)
+![Alt Text](https://media.giphy.com/media/f9QQ5sp0m2oFpgBPV4/giphy.gif)
+
 ![Alt Text](https://i.imgur.com/DzUbr3t.png)
 
 
