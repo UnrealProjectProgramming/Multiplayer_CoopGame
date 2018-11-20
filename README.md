@@ -1,9 +1,13 @@
 # Multiplayer CoopGame 
+
 ## Personal Project
+
 #### Engine Version 4.21.0
+
 ### A Coop multiplayer game made with ue4.
 
-// Start GIF here
+FIX THE GIF !
+
 ![Alt Text](https://media.giphy.com/media/9AI3BMj8FLat0Izea6/giphy.gif)
 ![Alt Text](https://i.imgur.com/DzUbr3t.png)
 
